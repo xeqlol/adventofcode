@@ -1,7 +1,6 @@
 const { readFile, writeFile } = require("fs").promises;
 
-async function solve() {
-  console.log("kek");
+(async function solve() {
   const rawData = await readFile("input");
   const data = rawData
     .toString()
@@ -17,6 +16,4 @@ async function solve() {
   );
 
   writeFile("output", String(totalFuel));
-}
-
-solve();
+})();
