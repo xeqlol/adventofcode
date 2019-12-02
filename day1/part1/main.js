@@ -1,10 +1,10 @@
-const { readFile, writeFile } = require("fs").promises;
+const { readFile, writeFile } = require('fs').promises;
 
-(async function solve() {
-  const rawData = await readFile("input");
+async function solve() {
+  const rawData = await readFile('input');
   const data = rawData
     .toString()
-    .split("\n")
+    .split('\n')
     .map(Number);
   const getFuelFromMass = mass => {
     return Math.floor(mass / 3) - 2;
@@ -15,5 +15,7 @@ const { readFile, writeFile } = require("fs").promises;
     0
   );
 
-  writeFile("output", String(totalFuel));
-})();
+  await writeFile('output', String(totalFuel));
+}
+
+solve();

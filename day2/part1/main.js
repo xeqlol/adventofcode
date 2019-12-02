@@ -1,10 +1,18 @@
-const { readFile, writeFile } = require("fs").promises;
+const { readFile, writeFile } = require('fs').promises;
 
-(async function solve() {
-  const rawData = await readFile("input");
+function getOpcodePointers(pointer, instructions) {
+  const leftPointer = instructions[pointer + 1];
+  const rightPointer = instructions[pointer + 2];
+  const outputPointer = instructions[pointer + 3];
+
+  return [leftPointer, rightPointer, outputPointer];
+}
+
+async function solve() {
+  const rawData = await readFile('input');
   const instructions = rawData
     .toString()
-    .split(",")
+    .split(',')
     .map(Number);
 
   instructions[1] = 12;
@@ -36,13 +44,7 @@ const { readFile, writeFile } = require("fs").promises;
     }
   }
 
-  writeFile("output", instructions[0]);
-})();
-
-function getOpcodePointers(pointer, instructions) {
-  const leftPointer = instructions[pointer + 1];
-  const rightPointer = instructions[pointer + 2];
-  const outputPointer = instructions[pointer + 3];
-
-  return [leftPointer, rightPointer, outputPointer];
+  await writeFile('output', instructions[0]);
 }
+
+solve();

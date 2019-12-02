@@ -1,30 +1,7 @@
-const { readFile, writeFile } = require("fs").promises;
-
-(async function solve() {
-  const rawData = await readFile("input");
-  const [rawInstructions, rawTarget] = rawData.toString().split("\n");
-  const instructions = rawInstructions.split(",").map(Number);
-  const target = Number(rawTarget);
-
-  // BRUTEFOOOOOOOOOOOOOOOOORCE
-  for (let noun = 0; noun <= 99; noun++) {
-    for (let verb = 0; verb <= 99; verb++) {
-      const tempInstructions = [...instructions];
-      tempInstructions[1] = noun;
-      tempInstructions[2] = verb;
-
-      const programOutput = runProgram(tempInstructions);
-
-      if (programOutput === target) {
-        writeFile("output", String(noun * 100 + verb));
-        return;
-      }
-    }
-  }
-})();
+const { readFile, writeFile } = require('fs').promises;
 
 function runProgram(instructions) {
-  processLoop: for (let pointer = 0; pointer < instructions.length; ) {
+  for (let pointer = 0; pointer < instructions.length; ) {
     const opcode = instructions[pointer];
 
     switch (opcode) {
@@ -45,12 +22,10 @@ function runProgram(instructions) {
       }
 
       case 99: {
-        break processLoop;
+        return instructions[0];
       }
     }
   }
-
-  return instructions[0];
 }
 
 function getOpcodePointers(pointer, instructions) {
@@ -60,3 +35,29 @@ function getOpcodePointers(pointer, instructions) {
 
   return [leftPointer, rightPointer, outputPointer];
 }
+
+async function solve() {
+  const rawData = await readFile('input');
+  const [rawInstructions, rawTarget] = rawData.toString().split('\n');
+  const instructions = rawInstructions.split(',').map(Number);
+  const target = Number(rawTarget);
+
+  // BRUTEFOOOOOOOOOOOOOOOOORCE
+  for (let noun = 0; noun <= 99; noun++) {
+    for (let verb = 0; verb <= 99; verb++) {
+      const tempInstructions = [...instructions];
+
+      tempInstructions[1] = noun;
+      tempInstructions[2] = verb;
+
+      const programOutput = runProgram(tempInstructions);
+
+      if (programOutput === target) {
+        await writeFile('output', String(noun * 100 + verb));
+        return;
+      }
+    }
+  }
+}
+
+solve();
