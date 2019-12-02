@@ -2,14 +2,28 @@ const { readFile, writeFile } = require("fs").promises;
 
 (async function solve() {
   const rawData = await readFile("input");
-  const instructions = rawData
-    .toString()
-    .split(",")
-    .map(Number);
+  const [rawInstructions, rawTarget] = rawData.toString().split("\n");
+  const instructions = rawInstructions.split(",").map(Number);
+  const target = Number(rawTarget);
 
-  instructions[1] = 12;
-  instructions[2] = 2;
+  // BRUTEFOOOOOOOOOOOOOOOOORCE
+  for (let noun = 0; noun <= 99; noun++) {
+    for (let verb = 0; verb <= 99; verb++) {
+      const tempInstructions = [...instructions];
+      tempInstructions[1] = noun;
+      tempInstructions[2] = verb;
 
+      const programOutput = runProgram(tempInstructions);
+
+      if (programOutput === target) {
+        writeFile("output", String(noun * 100 + verb));
+        return;
+      }
+    }
+  }
+})();
+
+function runProgram(instructions) {
   processLoop: for (let pointer = 0; pointer < instructions.length; ) {
     const opcode = instructions[pointer];
 
@@ -36,8 +50,8 @@ const { readFile, writeFile } = require("fs").promises;
     }
   }
 
-  writeFile("output", instructions[0]);
-})();
+  return instructions[0];
+}
 
 function getOpcodePointers(pointer, instructions) {
   const leftPointer = instructions[pointer + 1];
