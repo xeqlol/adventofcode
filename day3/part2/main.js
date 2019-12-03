@@ -110,7 +110,7 @@ async function solve() {
 
   const intersections = getIntersections(firstWireSegments, secondWireSegments);
 
-  const distances = intersections.map(({ totalDistance }) => totalDistance);
+  const distances = intersections.map(({ distance }) => distance);
 
   const minDistance = Math.min(...distances);
 
