@@ -85,9 +85,10 @@ function manhattanDistance(start, end) {
   let distance = 0;
   const dimensions = Math.max(start.length, end.length);
 
-  for (let i = 0; i < dimensions; i++) {
-    distance += Math.abs((end[i] || 0) - (start[i] || 0));
+  for (let index = 0; index < dimensions; index++) {
+    distance += Math.abs((end[index] || 0) - (start[index] || 0));
   }
+
   return distance;
 }
 
