@@ -2,34 +2,38 @@ const { readFile, writeFile } = require('fs').promises;
 
 function getSegmentsFromPath(path) {
   let currentPoint = [0, 0];
+  let distance = 0;
   const segments = [];
 
   for (let shift of path) {
-    let [direction, ...distance] = shift;
-    distance = Number(distance.join(''));
+    let [direction, ...step] = shift;
+    step = Number(step.join(''));
     const [currentX, currentY] = currentPoint;
     let nextX, nextY;
 
     switch (direction) {
       case 'R': {
-        [nextX, nextY] = [currentX + distance, currentY];
+        [nextX, nextY] = [currentX + step, currentY];
         break;
       }
       case 'L': {
-        [nextX, nextY] = [currentX - distance, currentY];
+        [nextX, nextY] = [currentX - step, currentY];
         break;
       }
       case 'U': {
-        [nextX, nextY] = [currentX, currentY + distance];
+        [nextX, nextY] = [currentX, currentY + step];
         break;
       }
       case 'D': {
-        [nextX, nextY] = [currentX, currentY - distance];
+        [nextX, nextY] = [currentX, currentY - step];
         break;
       }
     }
-
-    segments.push([currentX, currentY, nextX, nextY]);
+    segments.push({
+      distance,
+      coords: [currentX, currentY, nextX, nextY],
+    });
+    distance += step;
     currentPoint = [nextX, nextY];
   }
 
@@ -37,8 +41,14 @@ function getSegmentsFromPath(path) {
 }
 
 function getIntersection(firstSegment, secondSegment) {
-  const [x1, y1, x2, y2] = firstSegment;
-  const [x3, y3, x4, y4] = secondSegment;
+  const { distance: firstDistance, coords: firstSegmentCoords } = firstSegment;
+  const {
+    distance: secondDistance,
+    coords: secondSegmentCoords,
+  } = secondSegment;
+
+  const [x1, y1, x2, y2] = firstSegmentCoords;
+  const [x3, y3, x4, y4] = secondSegmentCoords;
 
   if ((x1 === x2 && y1 === y2) || (x3 === x4 && y3 === y4)) {
     return false;
@@ -60,7 +70,16 @@ function getIntersection(firstSegment, secondSegment) {
   const x = x1 + ua * (x2 - x1);
   const y = y1 + ua * (y2 - y1);
 
-  return [x, y];
+  const firstDistanceToIntersection = Math.hypot(x1 - x, y1 - y);
+  const secondDistanceToIntersection = Math.hypot(x3 - x, y3 - y);
+
+  const distance =
+    firstDistance +
+    secondDistance +
+    firstDistanceToIntersection +
+    secondDistanceToIntersection;
+
+  return { coords: [x, y], distance };
 }
 
 function getIntersections(firstSegments, secondSegments) {
@@ -76,20 +95,7 @@ function getIntersections(firstSegments, secondSegments) {
     }
   }
 
-  intersections.shift(); // remove origin
-
   return intersections;
-}
-
-function manhattanDistance(start, end) {
-  let distance = 0;
-  const dimensions = Math.max(start.length, end.length);
-
-  for (let index = 0; index < dimensions; index++) {
-    distance += Math.abs((end[index] || 0) - (start[index] || 0));
-  }
-
-  return distance;
 }
 
 async function solve() {
@@ -104,11 +110,9 @@ async function solve() {
 
   const intersections = getIntersections(firstWireSegments, secondWireSegments);
 
-  const manhattanDistances = intersections.map(intersection =>
-    manhattanDistance([0, 0], intersection)
-  );
+  const distances = intersections.map(({ totalDistance }) => totalDistance);
 
-  const minDistance = Math.min(...manhattanDistances);
+  const minDistance = Math.min(...distances);
 
   await writeFile('output', String(minDistance));
 }
