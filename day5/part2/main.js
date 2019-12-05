@@ -17,7 +17,7 @@ async function solve() {
     .split(',')
     .map(Number);
   const outputBuffer = [];
-  const input = 1;
+  const input = 5;
 
   processLoop: for (let pointer = 0; pointer < instructions.length; ) {
     const [mod3, mod2, mod1, opcode] = parseOpcode(instructions[pointer]);
@@ -64,17 +64,86 @@ async function solve() {
       }
 
       case '04': {
-        const inputPointer = instructions[pointer + 1];
+        const output = mod1
+          ? instructions[pointer + 1]
+          : instructions[instructions[pointer + 1]];
 
-        outputBuffer.push(instructions[inputPointer]);
+        outputBuffer.push(output);
 
         pointer += 2;
+        break;
+      }
+
+      case '05': {
+        const first = mod1
+          ? instructions[pointer + 1]
+          : instructions[instructions[pointer + 1]];
+        const second = mod2
+          ? instructions[pointer + 2]
+          : instructions[instructions[pointer + 2]];
+
+        if (first !== 0) {
+          pointer = second;
+          break;
+        }
+
+        pointer += 3;
+        break;
+      }
+
+      case '06': {
+        const first = mod1
+          ? instructions[pointer + 1]
+          : instructions[instructions[pointer + 1]];
+        const second = mod2
+          ? instructions[pointer + 2]
+          : instructions[instructions[pointer + 2]];
+
+        if (first === 0) {
+          pointer = second;
+          break;
+        }
+
+        pointer += 3;
+        break;
+      }
+
+      case '07': {
+        const first = mod1
+          ? instructions[pointer + 1]
+          : instructions[instructions[pointer + 1]];
+        const second = mod2
+          ? instructions[pointer + 2]
+          : instructions[instructions[pointer + 2]];
+        const outPointer = instructions[pointer + 3];
+
+        instructions[outPointer] = Number(first < second);
+
+        pointer += 4;
+        break;
+      }
+
+      case '08': {
+        const first = mod1
+          ? instructions[pointer + 1]
+          : instructions[instructions[pointer + 1]];
+        const second = mod2
+          ? instructions[pointer + 2]
+          : instructions[instructions[pointer + 2]];
+        const outPointer = instructions[pointer + 3];
+
+        instructions[outPointer] = Number(first === second);
+
+        pointer += 4;
         break;
       }
 
       case '99': {
         break processLoop;
       }
+
+      default:
+        return;
     }
   }
 
