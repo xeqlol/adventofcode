@@ -35,8 +35,7 @@ async function solve() {
 
   processLoop: for (let pointer = 0; pointer < instructions.length; ) {
     const { code, mods } = parseOpcode(instructions[pointer]);
-    const args = parseArguments(mods, instructions, pointer);
-    const [first, second, third] = args;
+    const [first, second, third] = parseArguments(mods, instructions, pointer);
 
     switch (code) {
       case '01': {
