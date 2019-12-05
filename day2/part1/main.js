@@ -20,19 +20,16 @@ async function solve() {
 
   processLoop: for (let pointer = 0; pointer < instructions.length; ) {
     const opcode = instructions[pointer];
+    const [left, right, output] = getOpcodePointers(pointer, instructions);
 
     switch (opcode) {
       case 1: {
-        const [left, right, output] = getOpcodePointers(pointer, instructions);
-
         instructions[output] = instructions[left] + instructions[right];
         pointer += 4;
         break;
       }
 
       case 2: {
-        const [left, right, output] = getOpcodePointers(pointer, instructions);
-
         instructions[output] = instructions[left] * instructions[right];
         pointer += 4;
         break;
