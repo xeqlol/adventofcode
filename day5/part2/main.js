@@ -10,6 +10,20 @@ function parseOpcode(rawOpcode) {
   return [Number(A), Number(B), Number(C), `${D}${E}`];
 }
 
+function getArgumentsFromOpcode(opcode, instructions, pointer) {
+  const [mod3, mod2, mod1] = opcode;
+
+  const first = mod1
+    ? instructions[pointer + 1]
+    : instructions[instructions[pointer + 1]];
+  const second = mod2
+    ? instructions[pointer + 2]
+    : instructions[instructions[pointer + 2]];
+  const third = instructions[pointer + 3];
+
+  return [first, second, third];
+}
+
 async function solve() {
   const rawData = await readFile('input');
   const instructions = rawData
@@ -20,35 +34,21 @@ async function solve() {
   const input = 5;
 
   processLoop: for (let pointer = 0; pointer < instructions.length; ) {
-    const [mod3, mod2, mod1, opcode] = parseOpcode(instructions[pointer]);
+    const opcode = parseOpcode(instructions[pointer]);
+    const [, , , opcodeId] = opcode;
+    const args = getArgumentsFromOpcode(opcode, instructions, pointer);
+    const [first, second, third] = args;
 
-    switch (opcode) {
+    switch (opcodeId) {
       case '01': {
-        // TODO: refactor this madness
-        const first = mod1
-          ? instructions[pointer + 1]
-          : instructions[instructions[pointer + 1]];
-        const second = mod2
-          ? instructions[pointer + 2]
-          : instructions[instructions[pointer + 2]];
-        const outPointer = instructions[pointer + 3];
-
-        instructions[outPointer] = first + second;
+        instructions[third] = first + second;
 
         pointer += 4;
         break;
       }
 
       case '02': {
-        const first = mod1
-          ? instructions[pointer + 1]
-          : instructions[instructions[pointer + 1]];
-        const second = mod2
-          ? instructions[pointer + 2]
-          : instructions[instructions[pointer + 2]];
-        const outPointer = instructions[pointer + 3];
-
-        instructions[outPointer] = first * second;
+        instructions[third] = first * second;
 
         pointer += 4;
         break;
@@ -64,24 +64,13 @@ async function solve() {
       }
 
       case '04': {
-        const output = mod1
-          ? instructions[pointer + 1]
-          : instructions[instructions[pointer + 1]];
-
-        outputBuffer.push(output);
+        outputBuffer.push(first);
 
         pointer += 2;
         break;
       }
 
       case '05': {
-        const first = mod1
-          ? instructions[pointer + 1]
-          : instructions[instructions[pointer + 1]];
-        const second = mod2
-          ? instructions[pointer + 2]
-          : instructions[instructions[pointer + 2]];
-
         if (first !== 0) {
           pointer = second;
           break;
@@ -92,13 +81,6 @@ async function solve() {
       }
 
       case '06': {
-        const first = mod1
-          ? instructions[pointer + 1]
-          : instructions[instructions[pointer + 1]];
-        const second = mod2
-          ? instructions[pointer + 2]
-          : instructions[instructions[pointer + 2]];
-
         if (first === 0) {
           pointer = second;
           break;
@@ -109,30 +91,14 @@ async function solve() {
       }
 
       case '07': {
-        const first = mod1
-          ? instructions[pointer + 1]
-          : instructions[instructions[pointer + 1]];
-        const second = mod2
-          ? instructions[pointer + 2]
-          : instructions[instructions[pointer + 2]];
-        const outPointer = instructions[pointer + 3];
-
-        instructions[outPointer] = Number(first < second);
+        instructions[third] = Number(first < second);
 
         pointer += 4;
         break;
       }
 
       case '08': {
-        const first = mod1
-          ? instructions[pointer + 1]
-          : instructions[instructions[pointer + 1]];
-        const second = mod2
-          ? instructions[pointer + 2]
-          : instructions[instructions[pointer + 2]];
-        const outPointer = instructions[pointer + 3];
-
-        instructions[outPointer] = Number(first === second);
+        instructions[third] = Number(first === second);
 
         pointer += 4;
         break;
