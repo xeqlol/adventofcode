@@ -7,11 +7,11 @@ function parseOpcode(rawOpcode) {
     ...rawOpcode,
   ];
 
-  return [Number(A), Number(B), Number(C), `${D}${E}`];
+  return { code: `${D}${E}`, mods: [Number(A), Number(B), Number(C)] };
 }
 
-function getArgumentsFromOpcode(opcode, instructions, pointer) {
-  const [mod3, mod2, mod1] = opcode;
+function parseArguments(mods, instructions, pointer) {
+  const [mod3, mod2, mod1] = mods;
 
   const first = mod1
     ? instructions[pointer + 1]
@@ -34,12 +34,11 @@ async function solve() {
   const input = 5;
 
   processLoop: for (let pointer = 0; pointer < instructions.length; ) {
-    const opcode = parseOpcode(instructions[pointer]);
-    const [, , , opcodeId] = opcode;
-    const args = getArgumentsFromOpcode(opcode, instructions, pointer);
+    const { code, mods } = parseOpcode(instructions[pointer]);
+    const args = parseArguments(mods, instructions, pointer);
     const [first, second, third] = args;
 
-    switch (opcodeId) {
+    switch (code) {
       case '01': {
         instructions[third] = first + second;
 
