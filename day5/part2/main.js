@@ -5,9 +5,9 @@ function parseOpcode(rawOpcode) {
   const [A, B, C, D] = [
     ...new Array(4 - rawOpcode.length).fill(0),
     ...rawOpcode,
-  ];
+  ].map(Number);
 
-  return { code: `${C}${D}`, mods: [Number(A), Number(B)] };
+  return { code: C * 10 + D, mods: [A, B] };
 }
 
 function parseArguments(mods, instructions, pointer) {
@@ -42,35 +42,35 @@ async function solve() {
     );
 
     switch (code) {
-      case '01': {
+      case 1: {
         instructions[third] = first + second;
 
         pointer += 4;
         break;
       }
 
-      case '02': {
+      case 2: {
         instructions[third] = first * second;
 
         pointer += 4;
         break;
       }
 
-      case '03': {
+      case 3: {
         instructions[first] = input;
 
         pointer += 2;
         break;
       }
 
-      case '04': {
+      case 3: {
         outputBuffer.push(first);
 
         pointer += 2;
         break;
       }
 
-      case '05': {
+      case 5: {
         if (first !== 0) {
           pointer = second;
           break;
@@ -80,7 +80,7 @@ async function solve() {
         break;
       }
 
-      case '06': {
+      case 6: {
         if (first === 0) {
           pointer = second;
           break;
@@ -90,21 +90,21 @@ async function solve() {
         break;
       }
 
-      case '07': {
+      case 7: {
         instructions[third] = Number(first < second);
 
         pointer += 4;
         break;
       }
 
-      case '08': {
+      case 8: {
         instructions[third] = Number(first === second);
 
         pointer += 4;
         break;
       }
 
-      case '99': {
+      case 99: {
         break processLoop;
       }
 
