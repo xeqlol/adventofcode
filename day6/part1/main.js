@@ -1,7 +1,7 @@
 const { readFile, writeFile } = require('fs').promises;
 
 function calcOrbits(node, map) {
-  orbits = 0;
+  let orbits = 0;
   let nextNode = node;
 
   while (nextNode !== 'COM') {

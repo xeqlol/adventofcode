@@ -25,25 +25,19 @@ async function solve() {
   const myPath = getPathToCOM('YOU', map);
   const santaPath = getPathToCOM('SAN', map);
 
-  let currentNodeIndex = 1;
-  let orbits = 0;
-  let currentMyNode = myPath[myPath.length - currentNodeIndex - 1];
-  let currentSantaNode = santaPath[santaPath.length - currentNodeIndex - 1];
+  let index = 1;
+  for (; index < Math.min(myPath.length, santaPath.length); index += 1) {
+    const currentMyNode = myPath[myPath.length - index - 1];
+    const currentSantaNode = santaPath[santaPath.length - index - 1];
+    const hasSamePath = currentMyNode === currentSantaNode;
 
-  // dirty
-  while (
-    currentMyNode === currentSantaNode &&
-    currentMyNode &&
-    currentSantaNode
-  ) {
-    orbits += 2;
-    currentNodeIndex += 1;
-    currentMyNode = myPath[myPath.length - currentNodeIndex - 1];
-    currentSantaNode = santaPath[santaPath.length - currentNodeIndex - 1];
+    if (!hasSamePath) {
+      break;
+    }
   }
 
-  const myPathLength = myPath.length - currentNodeIndex;
-  const santaPathLength = santaPath.length - currentNodeIndex;
+  const myPathLength = myPath.length - index;
+  const santaPathLength = santaPath.length - index;
   const totalPath = myPathLength + santaPathLength;
 
   await writeFile('output', String(totalPath));
